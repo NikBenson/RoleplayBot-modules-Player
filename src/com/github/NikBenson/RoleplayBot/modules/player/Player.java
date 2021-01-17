@@ -1,56 +1,92 @@
 package com.github.NikBenson.RoleplayBot.modules.player;
 
-import com.github.NikBenson.RoleplayBot.commands.Command;
-import com.github.NikBenson.RoleplayBot.commands.context.PrivateContext;
-import com.github.NikBenson.RoleplayBot.modules.RoleplayBotModule;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
+import org.json.simple.JSONObject;
 
-public class Player extends RoleplayBotModule implements ListenerAdapter {
-	@Override
-	public void load(Guild guild) {
-		guild.getJDA().addEventListener(this);
+public class Player {
+	/*private List<Character> characters = new LinkedList<>();
+	private int currentCharacter = 0;
+
+	private int characterCreationPhase = -1;
+	private Map<String, String> creatingCharacterSheet;
+	private Team creatingCharacterTeam;*/
+
+	private final User USER;
+
+	public Player(User user) {
+		USER = user;
 	}
 
-	@Override
-	public void unload(Guild guild) {
+	public Player(JSONObject json, JDA jda) {
+		USER = jda.getUserById((String) json.get("id"));
 
+		/*JSONArray charactersJson = (JSONArray) json.get("characters");
+
+		for (int i = 0; i < charactersJson.size(); i++) {
+			JSONObject characterJson = (JSONObject) charactersJson.get(i);
+
+			characters.add(new Character(characterJson));
+		}*/
 	}
-	@SubscribeEvent
-	@Override
-	public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
-		if (!event.getAuthor().isBot()) {
-			Message message = event.getMessage();
-			String content = message.getContentRaw();
 
-			if (content.startsWith(String.valueOf('!'))) {
-				onPrivateCommand(event);
+	public User getUser() {
+		return USER;
+	}
+
+	/*public Character getCurrentCharacter() {
+		return characters.get(currentCharacter);
+	}
+
+	public String startCharacterCreation() {
+		characterCreationPhase = 0;
+		creatingCharacterSheet = new JSONObject();
+		return TeamsManager.getInstance().getQuestion();
+	}
+	public void cancelCharacterCreation() {
+		characterCreationPhase = -1;
+		creatingCharacterSheet = null;
+		creatingCharacterTeam = null;
+	}
+	public String characterCreationAnswer(String answer) {
+		if(creatingCharacterTeam == null) {
+			creatingCharacterTeam = TeamsManager.getInstance().findTeam(answer);
+
+			if(creatingCharacterTeam != null) {
+				return SheetBlueprint.getInstanceOrCreate().getSheetQuestion(characterCreationPhase);
 			} else {
-				com.github.NikBenson.RoleplayBot.modules.player.models.Player player = PlayerManager.getInstance().getPlayerOrCreate(event.getAuthor());
-				if (player.isCreatingCharacter()) {
-					PrivateChannel channel = event.getChannel();
+				return "Invalid team. Please try again!";
+			}
+		} else {
+			creatingCharacterSheet.put(SheetBlueprint.getInstanceOrCreate().getSheetAttribute(characterCreationPhase), answer);
+			characterCreationPhase++;
 
-					channel.sendMessage(player.characterCreationAnswer(content)).queue();
-				}
+			if (SheetBlueprint.getInstanceOrCreate().getSheetAttribute(characterCreationPhase) != null) {
+				return SheetBlueprint.getInstanceOrCreate().getSheetQuestion(characterCreationPhase);
+			} else {
+				characters.add(new Character(creatingCharacterSheet, creatingCharacterTeam));
+				cancelCharacterCreation();
+				return "finished!";
 			}
 		}
 	}
-	private void onPrivateCommand(@NotNull PrivateMessageReceivedEvent event) {
-		String query = event.getMessage().getContentRaw().substring(1);
+	public boolean isCreatingCharacter() {
+		return characterCreationPhase >= 0;
+	}*/
 
-		Command<PrivateContext> command = Command.find(PrivateContext.class, query);
+	public JSONObject getJSON() {
+		JSONObject json = new JSONObject();
 
-		if(command != null) {
-			PrivateContext context = new PrivateContext(event);
-			PrivateChannel channel = event.getChannel();
+		//TODO Nullpointer
+		json.put("id", USER.getId());
 
-			channel.sendMessage(command.execute(query, context)).queue();
+		/*JSONArray charactersJson = new JSONArray();
+		for(Character character : characters) {
+			charactersJson.add(character.getJson());
 		}
-	}
 
+		json.put("characters", charactersJson);*/
+
+		return json;
+	}
 }
