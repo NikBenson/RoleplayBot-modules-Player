@@ -1,6 +1,6 @@
 package com.github.NikBenson.RoleplayBot.modules.player;
 
-import net.dv8tion.jda.api.JDA;
+import com.github.NikBenson.RoleplayBot.Bot;
 import net.dv8tion.jda.api.entities.User;
 import org.json.simple.JSONObject;
 
@@ -18,8 +18,8 @@ public class Player {
 		USER = user;
 	}
 
-	public Player(JSONObject json, JDA jda) {
-		USER = jda.getUserById((String) json.get("id"));
+	public Player(JSONObject json) {
+		USER = Bot.getJDA().getUserById((String) json.get("id"));
 
 		/*JSONArray charactersJson = (JSONArray) json.get("characters");
 
@@ -78,7 +78,7 @@ public class Player {
 		JSONObject json = new JSONObject();
 
 		//TODO Nullpointer
-		json.put("id", USER.getId());
+		json.put("id", USER.getIdLong());
 
 		/*JSONArray charactersJson = new JSONArray();
 		for(Character character : characters) {

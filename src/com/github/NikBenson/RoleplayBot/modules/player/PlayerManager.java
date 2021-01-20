@@ -1,5 +1,6 @@
 package com.github.NikBenson.RoleplayBot.modules.player;
 
+import com.github.NikBenson.RoleplayBot.Bot;
 import com.github.NikBenson.RoleplayBot.configurations.ConfigurationManager;
 import com.github.NikBenson.RoleplayBot.configurations.ConfigurationPaths;
 import com.github.NikBenson.RoleplayBot.configurations.JSONConfigured;
@@ -23,7 +24,7 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 
 	private final List<PlayerEventListener> listeners = new LinkedList<>();
 
-	Map<String, Player> players = new HashMap<>();
+	Map<User, Player> players = new HashMap<>();
 
 	public PlayerManager(Guild guild) {
 		GUILD = guild;
@@ -34,28 +35,36 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 		if(!listeners.contains(listener)) {
 			listeners.add(listener);
 		}
+		System.out.println("registered event");
+	}
+	public List<PlayerEventListener> getEventListeners() {
+		return listeners;
 	}
 
 	public Player getPlayerOrCreate(User user) {
-		if(!players.containsKey(user.getId())) {
+		if(!players.containsKey(user)) {
 			Player newPlayer = new Player(user);
-			players.put(user.getId(), newPlayer);
 
 			for(PlayerEventListener listener : listeners) {
 				listener.onPlayerCreate(newPlayer);
 			}
+
+			players.put(user, newPlayer);
 		}
 
-		return players.get(user.getId());
+		return players.get(user);
 	}
 
 	@SubscribeEvent
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-		User user = event.getUser();
+		System.out.println("player joined!");
+		if(event.getGuild() == GUILD) {
+			User user = event.getUser();
 
-		if(!user.isBot()) {
-			getPlayerOrCreate(user);
+			if (!user.isBot()) {
+				getPlayerOrCreate(user);
+			}
 		}
 	}
 
@@ -63,9 +72,15 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 	public JSONObject getJSON() {
 		JSONArray playersJson = new JSONArray();
 
-		for(String user : players.keySet()) {
+		for(User user : players.keySet()) {
 			Player player = players.get(user);
-			playersJson.add(player.getJSON());
+			JSONObject playerJson = player.getJSON();
+
+			for(PlayerEventListener listener : listeners) {
+				listener.onPlayerSave(player, playerJson);
+			}
+
+			playersJson.add(playerJson);
 		}
 
 		JSONObject json = new JSONObject();
@@ -87,10 +102,19 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 		for (Object o : playersJson) {
 			JSONObject currentJson = (JSONObject) o;
 
-			String userId = (String) currentJson.get("id");
-			Player currentPlayer = new Player(currentJson, GUILD.getJDA());
+			long userId = (long) currentJson.get("id");
+			Player currentPlayer = new Player(currentJson);
 
-			players.put(userId, currentPlayer);
+			for(PlayerEventListener listener : listeners) {
+				listener.onPlayerLoad(currentPlayer, currentJson);
+			}
+
+			players.put(Bot.getJDA().getUserById(userId), currentPlayer);
 		}
+	}
+
+	@Override
+	public Guild getGuild() {
+		return GUILD;
 	}
 }

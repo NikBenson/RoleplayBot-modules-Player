@@ -9,12 +9,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerModule implements RoleplayBotModule {
-	private static PlayerModule instance;
+	public static void main(String[] args) {
+		System.out.println("Please place in RoleplayBot's modules folder!!!");
+		System.exit(0);
+	}
 
 	private Map<Guild, PlayerManager> managers = new HashMap<>();
 
-	public PlayerModule() {
-		instance = this;
+	public PlayerManager getPlayerManager(Guild guild) {
+		return managers.get(guild);
 	}
 
 	@Override
@@ -51,7 +54,8 @@ public class PlayerModule implements RoleplayBotModule {
 
 	}
 
-	public static PlayerManager getPlayerManager(Guild guild) {
-		return instance.managers.get(guild);
+	@Override
+	public Guild[] getLoaded() {
+		return managers.keySet().toArray(new Guild[0]);
 	}
 }
