@@ -35,7 +35,6 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 		if(!listeners.contains(listener)) {
 			listeners.add(listener);
 		}
-		System.out.println("registered event");
 	}
 	public List<PlayerEventListener> getEventListeners() {
 		return listeners;
@@ -58,7 +57,6 @@ public class PlayerManager extends ListenerAdapter implements JSONConfigured {
 	@SubscribeEvent
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-		System.out.println("player joined!");
 		if(event.getGuild() == GUILD) {
 			User user = event.getUser();
 

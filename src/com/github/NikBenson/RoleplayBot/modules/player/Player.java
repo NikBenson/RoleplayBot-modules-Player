@@ -77,7 +77,6 @@ public class Player {
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 
-		//TODO Nullpointer
 		json.put("id", USER.getIdLong());
 
 		/*JSONArray charactersJson = new JSONArray();
