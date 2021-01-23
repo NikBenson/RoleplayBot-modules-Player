@@ -1,6 +1,6 @@
-package com.github.NikBenson.RoleplayBot.modules.player;
+package com.github.nikbenson.roleplaybot.modules.player;
 
-import com.github.NikBenson.RoleplayBot.Bot;
+import com.github.nikbenson.roleplaybot.Bot;
 import net.dv8tion.jda.api.entities.User;
 import org.json.simple.JSONObject;
 

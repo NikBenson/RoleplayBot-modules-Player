@@ -1,4 +1,4 @@
-package com.github.NikBenson.RoleplayBot.modules.player;
+package com.github.nikbenson.roleplaybot.modules.player;
 
 import org.json.simple.JSONObject;
 

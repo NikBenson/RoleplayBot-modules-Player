@@ -1,7 +1,7 @@
-package com.github.NikBenson.RoleplayBot.modules.player;
+package com.github.nikbenson.roleplaybot.modules.player;
 
-import com.github.NikBenson.RoleplayBot.configurations.ConfigurationManager;
-import com.github.NikBenson.RoleplayBot.modules.RoleplayBotModule;
+import com.github.nikbenson.roleplaybot.configurations.ConfigurationManager;
+import com.github.nikbenson.roleplaybot.modules.RoleplayBotModule;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.io.IOException;
